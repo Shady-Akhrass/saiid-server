@@ -23,7 +23,7 @@ class StudentController extends Controller
                 'id_number' => 'required|regex:/^\d{9}$/|unique:students,id_number',
                 'birth_date' => 'required|date',
                 'gender' => 'required|in:ذكر,أنثى',
-                'Academic_stage' => 'required|in:الابتدائية,الاعدادية',
+                'academic_stage' => 'required|in:الابتدائية,الاعدادية',
                 'address_details' => 'required',
                 'guardian_phone_number' => 'required|regex:/^\d{10}$/',
                 'alternative_phone_number' => 'required|regex:/^\d{10}$/',
@@ -37,8 +37,8 @@ class StudentController extends Controller
                 'birth_date.required' => 'يرجى إدخال تاريخ الميلاد',
                 'gender.required' => 'يرجى اختيار الجنس',
                 'gender.in' => 'يرجى اختيار جنس صحيح',
-                'Academic_stage.required' => 'يرجى اختيار المرحلة الدراسية',
-                'Academic_stage.in' => 'يرجى اختيار مرحلة دراسية صحيحة',
+                'academic_stage.required' => 'يرجى اختيار المرحلة الدراسية',
+                'academic_stage.in' => 'يرجى اختيار مرحلة دراسية صحيحة',
                 'address_details.required' => 'يرجى إدخال عنوان السكن بالتفصيل',
                 'guardian_phone_number.required' => 'يرجى إدخال رقم الجوال',
                 'guardian_phone_number.regex' => 'رقم الجوال يجب أن يتكون من 10 أرقام',
@@ -50,7 +50,7 @@ class StudentController extends Controller
             'رقم الهوية' => 'id_number',
             'تاريخ الميلاد' => 'birth_date',
             'الجنس' => 'gender',
-            'المرحلة الدراسية' => 'Academic_stage',
+            'المرحلة الدراسية' => 'academic_stage',
             'عنوان السكن بالتفصيل' => 'address_details',
             'رقم الجوال' => 'guardian_phone_number',
             'رقم الجوال البديل' => 'alternative_phone_number',
@@ -80,7 +80,7 @@ class StudentController extends Controller
             'name',
             'id_number',
             'gender',
-            'Academic_stage',
+            'academic_stage',
             'guardian_phone_number',
         ];
 
@@ -132,7 +132,7 @@ class StudentController extends Controller
         $totalStudentVisitors = $visitorCount ? $visitorCount->students_visitors : 0;
 
         $genderCounts = $students->groupBy('gender')->map->count();
-        $academicStageCounts = $students->groupBy('Academic_stage')->map->count();
+        $academicStageCounts = $students->groupBy('academic_stage')->map->count();
 
         // Age groups based on birth_date
         $studentAgeGroups = $students->map(function ($student) {

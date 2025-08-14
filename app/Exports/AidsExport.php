@@ -57,7 +57,7 @@ class AidsExport implements FromCollection, WithHeadings, WithMapping
             $aid->guardian_phone_number,
             $aid->alternative_phone_number,
             $aid->aid,
-            $aid->Nature_of_aid,
+            $aid->nature_of_aid,
             $aid->data_approval_name
         ];
     }

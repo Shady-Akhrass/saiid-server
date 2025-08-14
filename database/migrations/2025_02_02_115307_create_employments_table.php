@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('students', function (Blueprint $table) {
-            $table->string('id_number')->primary();
+        Schema::create('employments', function (Blueprint $table) {
+            $table->id();
             $table->string('name');
             $table->date('birth_date');
-            $table->enum('gender', ['ذكر', 'أنثى']);
-            $table->enum('academic_stage', ['الابتدائية', 'الاعدادية']);
-            $table->text('address_details');
-            $table->string('guardian_phone_number');
-            $table->string('alternative_phone_number');
+            $table->enum('address', ['محافظة رفح', 'محافظة خانيونس']);
+            $table->string('specialization');
+            $table->string('phone_number');
+            $table->string('previous_work_url');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('students');
+        Schema::dropIfExists('employments');
     }
 };

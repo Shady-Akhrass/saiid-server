@@ -11,15 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('students', function (Blueprint $table) {
+        Schema::create('patients', function (Blueprint $table) {
             $table->string('id_number')->primary();
             $table->string('name');
             $table->date('birth_date');
             $table->enum('gender', ['ذكر', 'أنثى']);
-            $table->enum('academic_stage', ['الابتدائية', 'الاعدادية']);
-            $table->text('address_details');
+            $table->enum('health_status', ['مريض', 'جيدة']);
+            $table->text('disease_description')->nullable();
+            $table->enum('marital_status', ['متزوج', 'أرمل', 'مطلق', 'أعزب']);
+            $table->integer('number_of_brothers')->nullable();
+            $table->integer('number_of_sisters')->nullable();
+            $table->enum('current_address', ['محافظة رفح', 'محافظة خانيونس', 'محافظة الوسطى', 'محافظة غزة', 'محافظة الشمال']);
             $table->string('guardian_phone_number');
             $table->string('alternative_phone_number');
+            $table->string('data_approval_name');
             $table->timestamps();
         });
     }
@@ -29,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('students');
+        Schema::dropIfExists('patients');
     }
 };

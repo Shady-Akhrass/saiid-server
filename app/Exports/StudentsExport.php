@@ -35,7 +35,7 @@ class StudentsExport implements FromCollection, WithHeadings, WithMapping
             $student->id_number,
             $student->birth_date,
             $student->gender,
-            $student->Academic_stage,
+            $student->academic_stage,
             $student->address_details,
             $student->guardian_phone_number,
             $student->alternative_phone_number

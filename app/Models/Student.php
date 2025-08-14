@@ -18,7 +18,7 @@ class Student extends Model
         'name',
         'birth_date',
         'gender',
-        'Academic_stage',
+        'academic_stage',
         'address_details',
         'guardian_phone_number',
         'alternative_phone_number',
