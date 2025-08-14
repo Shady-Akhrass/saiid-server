@@ -1,66 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## SAIID Server (Laravel 10 API)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel 10 REST API for collecting and managing humanitarian data: orphans, aids, students, teachers, shelters, refugees, patients, and employments. Includes authentication via Laravel Sanctum, Excel export/import, basic media delivery, and dashboard aggregation endpoints.
 
-## About Laravel
+### Tech stack
+- **Backend**: Laravel 10 (PHP ^8.1)
+- **Auth**: Laravel Sanctum
+- **Excel**: maatwebsite/excel
+- **HTTP client**: guzzlehttp/guzzle
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### Requirements
+- PHP ^8.1
+- Composer
+- MySQL/MariaDB (or any DB supported by Laravel)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Quick start
+1. Clone and install dependencies
+```bash
+composer install
+```
+2. Configure environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+- Set DB connection in `.env` (e.g., `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+- Optionally set `APP_URL` (used by Sanctum/CORS contexts).
+3. Run migrations
+```bash
+php artisan migrate
+```
+4. Serve the API
+```bash
+php artisan serve
+```
+The API will be available at `http://127.0.0.1:8000`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Authentication
+- Register: `POST /api/register` → returns `token`
+- Login: `POST /api/login` → returns `user` and `token`
+- Logout: `POST /api/logout` (Bearer token required)
 
-## Learning Laravel
+Use the token in requests that require auth:
+```http
+Authorization: Bearer {token}
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### File storage/serving
+- Orphan photos: saved under `public/orphan_photos/`
+- Death certificates: saved under `public/death_certificates/`
+- Shelter Excel sheets: saved under `public/excel_sheets/`
+- Public file serving endpoints:
+  - `GET /api/image/{id}` → orphan photo by orphan id
+  - `GET /api/death-certificate/{id}` → death certificate by orphan id
+  - `GET /api/excel/{id}` → shelter sheet by shelter id
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### API endpoints
+Auth is required where noted (Bearer token). Unlisted endpoints are public.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### Authentication
+- `POST /api/register` — Create user, returns token
+- `POST /api/login` — Login, returns token and user info
+- `POST /api/logout` — Invalidate current token (auth)
+- `PATCH /api/register/{id}` — Update user fields (auth)
+- `GET /api/user/{id}` — Fetch user by id (auth)
 
-## Laravel Sponsors
+#### Orphans
+- `POST /api/orphans` — Create orphan with uploads
+  - multipart fields include: `orphan_photo` (image, required), `death_certificate` (image, required) plus metadata such as `orphan_id_number`, `orphan_full_name`, `orphan_birth_date`, `orphan_gender`, guardian and mother details, etc. Validation messages are Arabic.
+- `POST /api/increment-visitor-orphans-count` — Increment visitor counter (public)
+- `GET /api/orphans` — Paginated list with search (auth)
+- `GET /api/orphans/dashboard` — Aggregations for charts (auth)
+- `GET /api/orphans/export` — Download `orphans.xlsx` (auth)
+- `GET /api/image/{id}` — Serve orphan photo (public)
+- `GET /api/death-certificate/{id}` — Serve death certificate (public)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### Aids
+- `POST /api/aids` — Create aid record (Arabic validation)
+- `POST /api/increment-visitor-aids-count` — Increment visitor counter (public)
+- `GET /api/aids` — Paginated list with search (auth)
+- `GET /api/aids/dashboard` — Aggregations (auth)
+- `GET /api/aids/export` — Download Excel (auth)
 
-### Premium Partners
+#### Students
+- `POST /api/students` — Create student
+- `POST /api/increment-visitor-students-count` — Increment visitor counter (public)
+- `GET /api/students` — Paginated list with search (auth)
+- `GET /api/students/dashboard` — Aggregations (auth)
+- `GET /api/students/export` — Download Excel (auth)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+#### Teachers
+- `POST /api/teachers` — Create teacher
+- `POST /api/increment-visitor-teachers-count` — Increment visitor counter (public)
+- `GET /api/teachers` — Paginated list with search (auth)
+- `GET /api/teachers/dashboard` — Aggregations (auth)
+- `GET /api/teachers/export` — Download Excel (auth)
 
-## Contributing
+#### Employments
+- `POST /api/employments` — Create employment
+- `GET /api/employments` — Paginated list with search (auth)
+- `GET /api/employments/export` — Download Excel (auth)
+- `GET /api/epmloyments/dashboard` — Aggregations (auth)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Shelters & Refugees
+- `POST /api/shelters` — Create shelter with `excel_sheet` (xlsx/xls/csv, saved to `public/excel_sheets/`)
+- `GET /api/shelters` — Paginated list with search (auth)
+- `POST /api/refugees/import` — Import refugees for a shelter
+  - multipart: `file` (xlsx/xls/csv), `manager_id_number` (must exist in shelters)
+- `GET /api/refugees/export` — Download refugees Excel (auth)
+- `GET /api/excel/{id}` — Serve uploaded shelter sheet (public)
 
-## Code of Conduct
+#### Patients
+- `POST /api/patients` — Create patient
+- `GET /api/patients` — Paginated list with search (auth)
+- `GET /api/patients/export` — Download Excel (auth)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Visitor counters (public)
+- `POST /api/increment-visitor-aids-count`
+- `POST /api/increment-visitor-orphans-count`
+- `POST /api/increment-visitor-teachers-count`
 
-## Security Vulnerabilities
+### Notes
+- Validation messages are localized (Arabic) for domain fields.
+- Export endpoints return downloadable Excel files.
+- Dashboard endpoints return aggregated counts for charting.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### License
+MIT
